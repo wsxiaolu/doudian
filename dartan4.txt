@@ -1,0 +1,48 @@
+Analyzing doudian...
+
+  error - lib\ui\orders\order_detail_page.dart:479:9 - The method 'AppTextField' isn't defined for the type '_ShipSheetState'. Try correcting the name to the name of an existing method, or defining a method named 'AppTextField'. - undefined_method
+warning - lib\ui\orders\orders_page.dart:9:8 - Unused import: '../../core/widgets/app_icon_button.dart'. Try removing the import directive. - unused_import
+   info - lib\core\theme\app_theme.dart:123:17 - Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation. - prefer_const_constructors
+   info - lib\data\local\after_sale_dao.dart:20:41 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\local\after_sale_dao.dart:26:25 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\local\after_sale_dao.dart:29:29 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\local\app_database.dart:6:8 - The import of 'package:sqflite/sqflite.dart' is unnecessary because all of the used elements are also provided by the import of 'package:sqflite_common_ffi/sqflite_ffi.dart'. Try removing the import directive. - unnecessary_import
+   info - lib\data\local\customer_dao.dart:20:40 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\local\customer_dao.dart:26:24 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\local\customer_dao.dart:29:28 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\local\order_dao.dart:27:41 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\local\order_dao.dart:33:25 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\local\order_dao.dart:36:29 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\local\order_item_dao.dart:21:41 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\local\order_item_dao.dart:27:25 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\local\order_item_dao.dart:30:29 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\local\product_dao.dart:20:39 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\local\product_dao.dart:26:23 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\local\product_dao.dart:29:27 - The parameter name 'e' doesn't match the name 'entity' in the overridden method. Try changing the name to 'entity'. - avoid_renaming_method_parameters
+   info - lib\data\remote\supabase_service.dart:68:9 - 'anonKey' is deprecated and shouldn't be used. Use publishableKey instead. anonKey will be removed in a future major version. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - lib\data\remote\supabase_service.dart:267:11 - Unnecessary use of string interpolation. Try replacing the string literal with the variable name. - unnecessary_string_interpolations
+   info - lib\ui\aftersales\after_sale_edit_page.dart:165:11 - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check. - use_build_context_synchronously
+   info - lib\ui\aftersales\after_sale_edit_page.dart:304:20 - Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation. - prefer_const_constructors
+   info - lib\ui\aftersales\after_sales_page.dart:138:5 - Use 'const' for final variables initialized to a constant value. Try replacing 'final' with 'const'. - prefer_const_declarations
+   info - lib\ui\customers\customer_edit_page.dart:120:11 - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check. - use_build_context_synchronously
+   info - lib\ui\customers\customer_edit_page.dart:214:20 - Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation. - prefer_const_constructors
+   info - lib\ui\customers\customers_page.dart:83:5 - Use 'const' for final variables initialized to a constant value. Try replacing 'final' with 'const'. - prefer_const_declarations
+   info - lib\ui\orders\batch_ship_page.dart:41:61 - Statements in a for should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\ui\orders\batch_ship_page.dart:232:24 - Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation. - prefer_const_constructors
+   info - lib\ui\orders\order_detail_page.dart:41:49 - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check. - use_build_context_synchronously
+   info - lib\ui\orders\order_detail_page.dart:232:11 - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check. - use_build_context_synchronously
+   info - lib\ui\orders\order_detail_page.dart:253:25 - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check. - use_build_context_synchronously
+   info - lib\ui\orders\order_detail_page.dart:503:37 - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check. - use_build_context_synchronously
+   info - lib\ui\orders\order_edit_page.dart:224:11 - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check. - use_build_context_synchronously
+   info - lib\ui\orders\order_edit_page.dart:480:18 - Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation. - prefer_const_constructors
+   info - lib\ui\orders\orders_page.dart:167:5 - Use 'const' for final variables initialized to a constant value. Try replacing 'final' with 'const'. - prefer_const_declarations
+   info - lib\ui\orders\scan_page.dart:289:24 - Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation. - prefer_const_constructors
+   info - lib\ui\products\product_edit_page.dart:141:11 - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check. - use_build_context_synchronously
+   info - lib\ui\products\product_edit_page.dart:284:20 - Use 'const' with the constructor to improve performance. Try adding the 'const' keyword to the constructor invocation. - prefer_const_constructors
+   info - lib\ui\products\products_page.dart:140:5 - Use 'const' for final variables initialized to a constant value. Try replacing 'final' with 'const'. - prefer_const_declarations
+   info - lib\ui\settings\settings_page.dart:98:22 - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check. Guard a 'State.context' use with a 'mounted' check on the State, and other BuildContext use with a 'mounted' check on the BuildContext. - use_build_context_synchronously
+   info - lib\ui\settings\settings_page.dart:100:11 - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check. Guard a 'State.context' use with a 'mounted' check on the State, and other BuildContext use with a 'mounted' check on the BuildContext. - use_build_context_synchronously
+   info - lib\ui\settings\settings_page.dart:107:27 - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check. Guard a 'State.context' use with a 'mounted' check on the State, and other BuildContext use with a 'mounted' check on the BuildContext. - use_build_context_synchronously
+   info - lib\ui\shell\app_shell.dart:81:19 - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check. - use_build_context_synchronously
+
+44 issues found.

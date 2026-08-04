@@ -1,0 +1,98 @@
+@echo off
+setlocal
+
+title Douyin Order Manager - Build (Windows + Android)
+
+REM Change to the project root (the folder that contains this scripts\ dir).
+cd /d "%~dp0\.."
+
+REM ---------------------------------------------------------------------------
+REM Flutter is often NOT on PATH when you double-click a .bat, because the
+REM file runs in a plain cmd.exe that does not load your dev-terminal PATH.
+REM Try a few common install locations before giving up.
+REM (These blocks only contain set/goto, never a stray ")", so they are safe.)
+REM ---------------------------------------------------------------------------
+if exist "C:\src\flutter\bin\flutter.bat" (
+  set "PATH=C:\src\flutter\bin;%PATH%"
+  goto :check
+)
+if exist "C:\flutter\bin\flutter.bat" (
+  set "PATH=C:\flutter\bin;%PATH%"
+  goto :check
+)
+if exist "%LOCALAPPDATA%\flutter\bin\flutter.bat" (
+  set "PATH=%LOCALAPPDATA%\flutter\bin;%PATH%"
+  goto :check
+)
+if exist "%USERPROFILE%\flutter\bin\flutter.bat" (
+  set "PATH=%USERPROFILE%\flutter\bin;%PATH%"
+  goto :check
+)
+
+:check
+where flutter >nul 2>nul
+if errorlevel 1 goto :noflutter
+goto :haveflutter
+
+:noflutter
+echo.
+echo [ERROR] flutter command still not found after auto-detect.
+echo.
+echo Options:
+echo   1. Install Flutter to one of these paths, then re-run this script:
+echo        C:\src\flutter   C:\flutter   %LOCALAPPDATA%\flutter   %USERPROFILE%\flutter
+echo   2. Or open a terminal where flutter already works (Flutter Console,
+echo      or PowerShell that has flutter on PATH) and run: scripts\build_windows.bat
+echo.
+echo Double-clicking uses plain cmd.exe and does NOT load your dev PATH.
+echo.
+pause
+exit /b 1
+
+:haveflutter
+echo Using flutter at:
+where flutter
+echo.
+
+echo [1/4] flutter pub get
+call flutter pub get
+if errorlevel 1 goto :fail
+
+echo [prep] stopping any stale instance and clearing old Windows build...
+taskkill /F /IM doudian_shop.exe >nul 2>nul
+taskkill /F /IM WerFault.exe >nul 2>nul
+if exist build\windows rmdir /s /q build\windows
+
+echo [2/4] flutter build windows --release
+call flutter build windows --release
+if errorlevel 1 goto :fail
+
+echo [2.5/4] bundle sqlite3.dll (required by sqflite on Windows)
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=(Get-ChildItem -Path $env:LOCALAPPDATA\Pub\Cache -Recurse -Filter sqlite3.dll -ErrorAction SilentlyContinue | Select-Object -First 1).FullName; if($s){Copy-Item $s 'build\windows\x64\runner\Release\sqlite3.dll' -Force; Write-Host ('[ok] copied ' + $s)} else {Write-Host '[warn] sqlite3.dll not found in pub cache'}"
+if errorlevel 1 echo [warn] could not auto-copy sqlite3.dll, continuing
+
+echo [3/4] flutter build apk --release
+call flutter build apk --release
+if errorlevel 1 goto :fail
+
+echo [4/4] flutter build appbundle --release
+call flutter build appbundle --release
+if errorlevel 1 goto :fail
+
+echo.
+echo All done.
+echo   Windows exe : build\windows\x64\runner\Release\
+echo   Android apk : build\app\outputs\flutter-apk\app-release.apk
+echo   Android aab : build\app\outputs\bundle\release\app-release.aab
+echo.
+echo NOTE: iOS can only be built on macOS. Use scripts/build_ios.sh there.
+echo       All three apps share the SAME source code (one Flutter project).
+goto :done
+
+:fail
+echo.
+echo Build FAILED. Read the error message above. The window stays open.
+echo.
+
+:done
+pause

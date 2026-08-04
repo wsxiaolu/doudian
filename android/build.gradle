@@ -1,0 +1,42 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// ---------------------------------------------------------------------------
+// 关键构建修复（沿用既有工程验证过的方案，请勿随意改动）
+//
+// 1) androidx.core 1.13.x 起，通知栏相关资源引用了 appcompat 的属性，
+//    在 verifyReleaseResources 阶段会出现 "resource not found" 编译中断。
+//    这里统一锁定 androidx.core 1.12.0 + appcompat 1.6.1，规避该问题。
+// 2) 不向 library 子模块注入 appcompat 依赖，避免 alpha 属性冲突报错。
+// 3) 强制降低 byte-buddy / bouncycastle 版本，规避高版本 Java 字节码异常。
+// ---------------------------------------------------------------------------
+subprojects {
+    project.configurations.all {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group.startsWith('androidx.core')) {
+                details.useVersion '1.12.0'
+            }
+            if (details.requested.group == 'androidx.appcompat' && details.requested.name == 'appcompat') {
+                details.useVersion '1.6.1'
+            }
+        }
+        resolutionStrategy.force 'net.bytebuddy:byte-buddy:1.14.17'
+        resolutionStrategy.force 'org.bouncycastle:bcprov-jdk15on:1.77'
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

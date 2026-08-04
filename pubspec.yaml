@@ -1,0 +1,58 @@
+name: doudian_shop
+description: "抖店商家订单管理系统 —— Flutter + Supabase 跨平台（Windows / Android / iOS）"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.6.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # 状态管理
+  provider: ^6.1.2
+
+  # 本地存储（离线优先）
+  sqflite: ^2.3.0
+  sqflite_common_ffi: ^2.3.0
+  path: ^1.9.0
+  path_provider: ^2.1.2
+  shared_preferences: ^2.2.2
+
+  # 云端后端
+  supabase_flutter: ^2.5.0
+
+  # 网络与工具
+  http: ^1.2.0
+  crypto: ^3.0.3
+  uuid: ^4.3.0
+  intl: any
+  collection: ^1.18.0
+  connectivity_plus: ^6.0.0
+
+  # 报表导出与分享
+  excel: ^4.0.6
+  file_picker: ^8.0.0
+  share_plus: ^10.0.0
+
+  # 扫码（移动端；桌面端自动降级为扫码枪键盘输入）
+  mobile_scanner: ^5.2.3
+
+  # 动效
+  flutter_animate: ^4.5.0
+
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
