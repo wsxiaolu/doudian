@@ -18,10 +18,16 @@ jobs:
   # ===========================================================================
   build-windows:
     name: Windows 便携包
-    runs-on: windows-latest
+    # 显式固定 VS 2022 镜像；windows-latest 可能指向 VS 2026，Flutter 3.27 不识别其生成器
+    runs-on: windows-2022
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
+
+      - name: 初始化 Visual Studio 2022 环境
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
