@@ -1,0 +1,176 @@
+name: Build (Windows / Android / iOS)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# 取消同一分支上仍在运行的旧工作流，省 CI 分钟
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ===========================================================================
+  # Windows：出可便携运行的 Release 目录（doudian_shop.exe + sqlite3.dll）
+  # ===========================================================================
+  build-windows:
+    name: Windows 便携包
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.0'
+          channel: 'stable'
+          cache: true
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: flutter build windows --release
+        run: flutter build windows --release
+
+      - name: 复制 sqlite3.dll（sqflite 在 Windows 上的原生依赖）
+        shell: pwsh
+        run: |
+          $s = Get-ChildItem -Path "$env:LOCALAPPDATA\Pub\Cache" -Recurse -Filter sqlite3.dll -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($s) {
+            Copy-Item $s.FullName 'build\windows\x64\runner\Release\sqlite3.dll' -Force -ErrorAction SilentlyContinue
+            Write-Host "[ok] copied $($s.FullName)"
+          } else {
+            Write-Host "[warn] sqlite3.dll not found in pub cache"
+          }
+
+      - name: 上传 Windows 便携包
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-release
+          path: build/windows/x64/runner/Release/
+          if-no-files-found: warn
+
+  # ===========================================================================
+  # Android：出 app-release.apk + app-release.aab（无 key.properties 时回退 debug 签名）
+  # ===========================================================================
+  build-android:
+    name: Android APK / AAB
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.0'
+          channel: 'stable'
+          cache: true
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: flutter build apk --release
+        run: flutter build apk --release
+
+      - name: flutter build appbundle --release
+        run: flutter build appbundle --release
+
+      - name: 上传 Android 产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: warn
+
+  # ===========================================================================
+  # iOS：在 macOS 上构建
+  #   - 默认（未配置 Apple 证书 Secrets）：无签名编译构建，验证 iOS 可编过，
+  #     上传 build/ios/iphoneos/Runner.app 作为产物。
+  #   - 配置以下 Secrets 后：自动导入证书 + 描述文件，出真正的 IPA 并上传。
+  #       APPLE_CERT_P12_BASE64          证书(.p12) 的 base64
+  #       APPLE_CERT_PASSWORD            .p12 导出密码
+  #       APPLE_PROVISIONING_PROFILE_BASE64  描述文件(.mobileprovision) 的 base64
+  #       （如 Runner.xcworkspace 需指定 Team，可在 ios/ExportOptions.plist 中调整）
+  # ===========================================================================
+  build-ios:
+    name: iOS 构建
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.0'
+          channel: 'stable'
+          cache: true
+
+      - name: 确保 CocoaPods 已安装
+        run: |
+          if ! command -v pod >/dev/null 2>&1; then
+            sudo gem install cocoapods -v 1.15.2
+          fi
+          pod --version
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: pod install
+        run: (cd ios && pod install)
+
+      # ---- 无签名构建（默认，无需任何 Apple 凭据） ----
+      - name: Build iOS (unsigned)
+        if: ${{ secrets.APPLE_CERT_P12_BASE64 == '' }}
+        run: flutter build ios --release --no-codesign
+
+      - name: 上传 Runner.app（无签名）
+        if: ${{ secrets.APPLE_CERT_P12_BASE64 == '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-runner-app-unsigned
+          path: build/ios/iphoneos/Runner.app
+          if-no-files-found: warn
+
+      # ---- 有签名凭据时：导入证书 + 描述文件，出 IPA ----
+      - name: 导入签名证书到临时钥匙串
+        if: ${{ secrets.APPLE_CERT_P12_BASE64 != '' }}
+        env:
+          APPLE_CERT_P12_BASE64: ${{ secrets.APPLE_CERT_P12_BASE64 }}
+          APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+        run: |
+          KEYCHAIN=build.keychain-db
+          security create-keychain -p "" "$KEYCHAIN"
+          security list-keychains -d user -s "$KEYCHAIN" login.keychain-db
+          security set-keychain-settings -t 3600 -u "$KEYCHAIN"
+          echo "$APPLE_CERT_P12_BASE64" | base64 --decode > cert.p12
+          security import cert.p12 -k "$KEYCHAIN" -P "$APPLE_CERT_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security -T /usr/bin/productsign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" "$KEYCHAIN"
+          rm -f cert.p12
+
+      - name: 安装 Provisioning Profile
+        if: ${{ secrets.APPLE_CERT_P12_BASE64 != '' }}
+        env:
+          APPLE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          echo "$APPLE_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$HOME/Library/MobileDevice/Provisioning Profiles/profile.mobileprovision"
+
+      - name: Build signed IPA
+        if: ${{ secrets.APPLE_CERT_P12_BASE64 != '' }}
+        run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+
+      - name: 上传 IPA
+        if: ${{ secrets.APPLE_CERT_P12_BASE64 != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: build/ios/ipa/*.ipa
+          if-no-files-found: warn
