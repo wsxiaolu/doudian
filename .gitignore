@@ -55,3 +55,6 @@ crash_log.txt
 android/key.properties
 android/*.jks
 android/upload-keystore.jks
+
+# WorkBuddy 工作区数据（记忆/任务等内部笔记，不应入库）
+.workbuddy/
