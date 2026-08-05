@@ -69,16 +69,22 @@ jobs:
         run: flutter build ios --release --no-codesign
 
       # 把 Runner.app 按标准 IPA 结构（Payload/Runner.app）打包成 .ipa
-      # 用 ditto 而非 zip，能完整保留符号链接与资源分叉，Sideloadly 重签更稳
+      # 用 ditto 保持符号链接；去掉 --sequesterRsrc，避免 macOS 资源分叉破坏 IPA 格式
       - name: 打包成未签名 IPA（供 Sideloadly 用免费 Apple ID 自签）
         run: |
           cd build/ios/iphoneos
           rm -rf Payload
           mkdir -p Payload
           cp -R Runner.app Payload/
-          ditto -c -k --sequesterRsrc Payload "$IPA_NAME"
+          ditto -c -k Payload "$IPA_NAME"
           echo "✅ 已生成 IPA: $(pwd)/$IPA_NAME"
           ls -lh "$IPA_NAME"
+
+      - name: 校验 IPA 结构
+        run: |
+          cd build/ios/iphoneos
+          unzip -l "$IPA_NAME" | head -40
+          python3 -c "import zipfile; z=zipfile.ZipFile('$IPA_NAME'); assert 'Payload/Runner.app/Info.plist' in z.namelist(), 'IPA 结构异常'; print('✅ IPA 结构校验通过：Payload/Runner.app/Info.plist 存在')"
 
       - name: 上传 IPA 产物
         uses: actions/upload-artifact@v4
