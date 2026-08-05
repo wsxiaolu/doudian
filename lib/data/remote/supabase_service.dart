@@ -65,7 +65,8 @@ class SupabaseService {
       // SDK 默认会把会话持久化到本地并自动续期，正是「记住登录状态」所需要的行为
       await Supabase.initialize(
         url: _url,
-        anonKey: _anonKey,
+        // publishableKey 兼容新版 sb_publishable_ 格式密钥（anonKey 已废弃）
+        publishableKey: _anonKey,
         debug: false,
       );
       _initialized = true;

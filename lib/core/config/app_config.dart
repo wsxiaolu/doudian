@@ -15,10 +15,10 @@ class AppConfig {
   static const String appVersion = '1.0.0';
 
   // —— Supabase 出厂默认值 ——
-  // 打包分发前可以在这里填好，用户开箱即用；
-  // 留空则首次启动进入「本地模式」，由用户在设置页自行填写。
-  static const String defaultSupabaseUrl = '';
-  static const String defaultSupabaseAnonKey = '';
+  // 已填入云端项目，三端包开箱即用，登录邮箱即多端同步。
+  // url 来自项目 Reference ID；anonKey 为 publishable（公开）密钥，靠 RLS 隔离数据，可安全入库。
+  static const String defaultSupabaseUrl = 'https://gopfnyqpaliokdhyfvwu.supabase.co';
+  static const String defaultSupabaseAnonKey = 'sb_publishable_QM05zNMHxysQEwFVWKM1Jw_R2zyEmzK';
 
   // —— 抖店开放平台 ——
   /// 抖店开放平台网关地址（正式环境）
