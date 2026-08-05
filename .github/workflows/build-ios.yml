@@ -69,14 +69,15 @@ jobs:
         run: flutter build ios --release --no-codesign
 
       # 把 Runner.app 按标准 IPA 结构（Payload/Runner.app）打包成 .ipa
-      # 用 ditto 保持符号链接；去掉 --sequesterRsrc，避免 macOS 资源分叉破坏 IPA 格式
+      # 必须用 zip -r（带 Payload 目录名），不可用 ditto Payload（会丢掉 Payload 这层目录）
+      # -y 保留符号链接，避免 Frameworks 里的 .dylib 软链失效
       - name: 打包成未签名 IPA（供 Sideloadly 用免费 Apple ID 自签）
         run: |
           cd build/ios/iphoneos
           rm -rf Payload
           mkdir -p Payload
           cp -R Runner.app Payload/
-          ditto -c -k Payload "$IPA_NAME"
+          zip -r -y "$IPA_NAME" Payload
           echo "✅ 已生成 IPA: $(pwd)/$IPA_NAME"
           ls -lh "$IPA_NAME"
 
